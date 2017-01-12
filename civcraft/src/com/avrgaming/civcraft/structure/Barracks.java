@@ -190,20 +190,20 @@ public class Barracks extends Structure {
 		try {
 			ItemStack inHand = player.getItemInHand();
 			if (inHand == null || inHand.getType().equals(Material.AIR)) {
-				throw new CivException(CivSettings.localize.localizedString("barracks_repair_noItem"));
+				throw new CivException("Must have an item in your hand in order to repair it.");
 			}
 			
 			if (inHand.getType().getMaxDurability() == 0) {
-				throw new CivException(CivSettings.localize.localizedString("barracks_repair_invalidItem"));
+				throw new CivException("Can only repair items that use durability.");
 			}
 			
 			if (inHand.getDurability() == 0) {
-				throw new CivException(CivSettings.localize.localizedString("barracks_repair_atFull"));
+				throw new CivException("This item is already at full health.");
 			}
 			
 			LoreCraftableMaterial craftMat = LoreCraftableMaterial.getCraftMaterial(inHand);
 			if (craftMat == null) {
-				throw new CivException(CivSettings.localize.localizedString("barracks_repair_irreperable"));
+				throw new CivException("Cannot repair this item.");
 			}
 			
 			try {
@@ -226,7 +226,7 @@ public class Barracks extends Structure {
 				
 			} catch (InvalidConfiguration e) {
 				e.printStackTrace();
-				throw new CivException(CivSettings.localize.localizedString("internalException"));
+				throw new CivException("Internal configuration error");
 			}
 			
 			
@@ -249,21 +249,21 @@ public class Barracks extends Structure {
 		Resident resident = CivGlobal.getResident(player);
 		
 		if (!resident.getTreasury().hasEnough(cost)) {
-			CivMessage.sendError(player, CivSettings.localize.localizedString("var_barracks_repair_TooPoor",cost,CivSettings.CURRENCY_NAME));
+			CivMessage.sendError(player, "Sorry, but you don't have the required "+cost+" coins.");
 			return;
 		}
 		
 		LoreCraftableMaterial craftMatInHand = LoreCraftableMaterial.getCraftMaterial(player.getItemInHand());
 		
 		if (!craftMatInHand.getConfigId().equals(craftMat.getConfigId())) {
-			CivMessage.sendError(player, CivSettings.localize.localizedString("barracks_repair_DifferentItem"));
+			CivMessage.sendError(player, "You're not holding the item that you started the repair with.");
 			return;
 		}
 		
 		resident.getTreasury().withdraw(cost);
 		player.getItemInHand().setDurability((short)0);
 		
-		CivMessage.sendSuccess(player, CivSettings.localize.localizedString("var_barracks_repair_Success",craftMat.getName(),cost,CivSettings.CURRENCY_NAME));
+		CivMessage.sendSuccess(player, "Repaired "+craftMat.getName()+" for "+cost+" coins.");
 		
 	}
 	
